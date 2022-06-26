@@ -1,0 +1,1841 @@
+{
+	"info": {
+		"_postman_id": "592423cf-7c0e-4864-872e-b8f0ee8c73bd",
+		"name": "AMLApp",
+		"description": "Import products massively from Amazon and export them to Mercado Libre through this API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Mercado Libre API",
+			"item": [
+				{
+					"name": "Authentication",
+					"item": [
+						{
+							"name": "Authorization token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "5575075654822996",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "hfAzqGc0aHUQXv4UipSxQDd9lWNeqj4p",
+											"type": "text"
+										},
+										{
+											"key": "code",
+											"value": "TG-6039ab1becd3f8000883fc66-708063245",
+											"type": "text"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "https://amlapp.justinsalcedo.com/ml/auth",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://api.mercadolibre.com/oauth/token",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								},
+								"description": "Post server-side grant code from authenticated user to get the access token and refresh token."
+							},
+							"response": []
+						},
+						{
+							"name": "User authentication",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://auth.mercadolibre.com.co/authorization?response_type=code&client_id=5575075654822996",
+									"protocol": "https",
+									"host": [
+										"auth",
+										"mercadolibre",
+										"com",
+										"co"
+									],
+									"path": [
+										"authorization"
+									],
+									"query": [
+										{
+											"key": "response_type",
+											"value": "code"
+										},
+										{
+											"key": "client_id",
+											"value": "5575075654822996"
+										}
+									]
+								},
+								"description": "User must authenticate to grant permissions to our app. It returns a 'Authorization Code Grant Type (Server Side)'"
+							},
+							"response": []
+						},
+						{
+							"name": "Request authorization code",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://auth.mercadolibre.com.co/authorization?response_type=code&client_id={{amlapp ml app_id}}&redirect_uri={{amlapp ml redirect_uri}}",
+									"protocol": "http",
+									"host": [
+										"auth",
+										"mercadolibre",
+										"com",
+										"co"
+									],
+									"path": [
+										"authorization"
+									],
+									"query": [
+										{
+											"key": "response_type",
+											"value": "code"
+										},
+										{
+											"key": "client_id",
+											"value": "{{amlapp ml app_id}}"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "{{amlapp ml redirect_uri}}"
+										}
+									]
+								},
+								"description": "Access /authorization using the APP_ID"
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "grant_type",
+											"value": "refresh_token",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "{{amlapp ml app_id}}",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "{{amlapp ml secret}}",
+											"type": "text"
+										},
+										{
+											"key": "refresh_token",
+											"value": "TG-6031ccd43e7a040007cca1fe-718290541",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://api.mercadolibre.com/oauth/token",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								},
+								"description": "Use refresh token from previous authorization\n\nExample response\n{\n    \"access_token\": \"APP_USR-5575075654822996-021917-8fb9426f06e0e6fd1f39fabd86d0ef99-716746448\",\n    \"token_type\": \"bearer\",\n    \"expires_in\": 21600,\n    \"scope\": \"offline_access read write\",\n    \"user_id\": 716746448,\n    \"refresh_token\": \"TG-602d4c82a5a4ad0006093b60-716746448\"\n}"
+							},
+							"response": []
+						}
+					],
+					"description": "Authenticate user and grant permission to our app. Receive a token."
+				},
+				{
+					"name": "Test users",
+					"item": [
+						{
+							"name": "Create a test user",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_ml_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"site_id\": \"MLM\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mercadolibre.com/users/test_user",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"users",
+										"test_user"
+									]
+								},
+								"description": "{\n    \"id\": 722134977,\n    \"nickname\": \"TETE5286671\",\n    \"password\": \"qatest2041\",\n    \"site_status\": \"active\",\n    \"email\": \"test_user_46901087@testuser.com\"\n}"
+							},
+							"response": []
+						}
+					],
+					"description": "Use access token to generate test users.\n\nGet something like:\n{\n\t\"id\":120506781,\n    \"nickname\":\"TEST0548\",\n    \"password\":\"qatest328\",\n    \"site_status\":\"active\"\n}",
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Manage users",
+					"item": [
+						{
+							"name": "Get my personal info",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.mercadolibre.com/users/me",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								},
+								"description": "\"If you are logged in Mercado Libre and have a token, you will be able to make the call below and learn about your user-related information\""
+							},
+							"response": []
+						}
+					],
+					"description": "Simulate interactions between buyers and sellers.",
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{amlapp ml private token}}",
+								"type": "string"
+							}
+						]
+					}
+				},
+				{
+					"name": "Items and Searches",
+					"item": [
+						{
+							"name": "Searching items by seller ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer APP_USR-5065493996956102-062214-afc058e42135a2427d865ad0b754fbd6-1147566865",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.mercadolibre.com/users/1147566865/items/search",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"users",
+										"1147566865",
+										"items",
+										"search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Multiget items by id",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{user_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.mercadolibre.com/items?ids=MCO611596755,MCO611597911",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"items"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "MCO611596755,MCO611597911"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Listing an item",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer APP_USR-5575075654822996-030701-197b9bc781b0f135cae9055fab38a34e-722134977",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"Item de test - No Ofertar 3\",\n    \"category_id\":\"MCO1442\",\n    \"price\": 104904,\n    \"currency_id\": \"COP\",\n    \"available_quantity\": 10,\n    \"buying_mode\":\"buy_it_now\",\n    \"condition\":\"new\",\n    \"listing_type_id\":\"gold_special\",\n    \"description\":{\n       \"plain_text\":\"! $%&'()  ,-.-0123456789:;   ?atABCDEFGHIJKLMNOPQRSTUVWXYZ     abcdefghijklmnopqrstuvwxyz \"\n    },\n    \"video_id\":\"YOUTUBE_ID_HERE\",\n    \"sale_terms\":[\n       {\n          \"id\":\"WARRANTY_TYPE\",\n          \"value_name\":\"Garantía del vendedor\"\n       },\n       {\n          \"id\":\"WARRANTY_TIME\",\n          \"value_name\":\"90 días\"\n       }\n    ],\n    \"pictures\":[\n       {\n          \"source\":\"http://mla-s2-p.mlstatic.com/968521-MLA20805195516_072016-O.jpg\"\n       }\n    ],\n    \"attributes\":[\n       {\n          \"id\":\"BRAND\",\n          \"value_name\":\"Marca del producto\"\n       },\n       {\n          \"id\":\"EAN\",\n          \"value_name\":\"7898095297749\"\n       }\n    ]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mercadolibre.com/items",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"items"
+									]
+								},
+								"description": "{\n    \"id\": \"MCO610567517\",\n    \"site_id\": \"MCO\",\n    \"title\": \"Mens Watches Ultra-thin Minimalist Waterproof\",\n    \"subtitle\": null,\n    \"seller_id\": 722134977,\n    \"category_id\": \"MCO1442\",\n    \"official_store_id\": null,\n    \"price\": 104904,\n    \"base_price\": 104904,\n    \"original_price\": null,\n    \"inventory_id\": null,\n    \"currency_id\": \"COP\",\n    \"initial_quantity\": 10,\n    \"available_quantity\": 10,\n    \"sold_quantity\": 0,\n    \"sale_terms\": [\n        {\n            \"id\": \"WARRANTY_TYPE\",\n            \"name\": \"Tipo de garantía\",\n            \"value_id\": \"2230280\",\n            \"value_name\": \"Garantía del vendedor\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": \"2230280\",\n                    \"name\": \"Garantía del vendedor\",\n                    \"struct\": null\n                }\n            ]\n        },\n        {\n            \"id\": \"WARRANTY_TIME\",\n            \"name\": \"Tiempo de garantía\",\n            \"value_id\": null,\n            \"value_name\": \"90 días\",\n            \"value_struct\": {\n                \"number\": 90,\n                \"unit\": \"días\"\n            },\n            \"values\": [\n                {\n                    \"id\": null,\n                    \"name\": \"90 días\",\n                    \"struct\": {\n                        \"number\": 90,\n                        \"unit\": \"días\"\n                    }\n                }\n            ]\n        }\n    ],\n    \"buying_mode\": \"buy_it_now\",\n    \"listing_type_id\": \"gold_special\",\n    \"start_time\": \"2021-03-05T02:36:10.947Z\",\n    \"stop_time\": \"2041-02-27T04:00:00.000Z\",\n    \"end_time\": \"2041-02-27T04:00:00.000Z\",\n    \"expiration_time\": \"2021-05-24T02:36:11.065Z\",\n    \"condition\": \"new\",\n    \"permalink\": \"http://articulo.mercadolibre.com.co/MCO-610567517-mens-watches-ultra-thin-minimalist-waterproof-_JM\",\n    \"pictures\": [\n        {\n            \"id\": \"999741-MCO45098738333_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"678158-MCO45098738327_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"964939-MCO45098738332_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"841694-MCO45098738330_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"705871-MCO45098738329_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"780037-MCO45098738328_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"666773-MCO45098738331_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        }\n    ],\n    \"video_id\": \"YOUTUBE_ID_HERE\",\n    \"descriptions\": [\n        {\n            \"id\": \"MCO610567517-3286908414\"\n        }\n    ],\n    \"accepts_mercadopago\": true,\n    \"non_mercado_pago_payment_methods\": [],\n    \"shipping\": {\n        \"mode\": \"not_specified\",\n        \"local_pick_up\": false,\n        \"free_shipping\": false,\n        \"methods\": [],\n        \"dimensions\": null,\n        \"tags\": [\n            \"adoption_required\",\n            \"mandatory_free_shipping_available\"\n        ],\n        \"logistic_type\": \"not_specified\",\n        \"store_pick_up\": false\n    },\n    \"international_delivery_mode\": \"none\",\n    \"seller_address\": {\n        \"id\": \"\",\n        \"comment\": \"\",\n        \"address_line\": \"\",\n        \"zip_code\": \"\",\n        \"city\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"state\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"country\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"latitude\": \"\",\n        \"longitude\": \"\",\n        \"search_location\": {\n            \"neighborhood\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            },\n            \"city\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            },\n            \"state\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            }\n        }\n    },\n    \"seller_contact\": null,\n    \"location\": {},\n    \"geolocation\": {\n        \"latitude\": \"\",\n        \"longitude\": \"\"\n    },\n    \"coverage_areas\": [],\n    \"attributes\": [\n        {\n            \"id\": \"ITEM_CONDITION\",\n            \"name\": \"Condición del ítem\",\n            \"value_id\": \"2230284\",\n            \"value_name\": \"Nuevo\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": \"2230284\",\n                    \"name\": \"Nuevo\",\n                    \"struct\": null\n                }\n            ],\n            \"attribute_group_id\": \"\",\n            \"attribute_group_name\": \"\"\n        },\n        {\n            \"id\": \"GENDER\",\n            \"name\": \"Género\",\n            \"value_id\": null,\n            \"value_name\": \"GENDER\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": null,\n                    \"name\": \"GENDER\",\n                    \"struct\": null\n                }\n            ],\n            \"attribute_group_id\": \"OTHERS\",\n            \"attribute_group_name\": \"Otros\"\n        }\n    ],\n    \"warnings\": [\n        {\n            \"department\": \"shipping\",\n            \"cause_id\": 4029,\n            \"code\": \"shipping.me2_adoption_mandatory\",\n            \"message\": \"ME2 adoption is mandatory for the user\",\n            \"references\": [\n                \"shipping.modes\",\n                \"user.shipping_preferences.option\"\n            ]\n        }\n    ],\n    \"listing_source\": \"\",\n    \"variations\": [],\n    \"thumbnail_id\": \"999741-MCO45098738333_032021\",\n    \"thumbnail\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/I-ES.jpg\",\n    \"secure_thumbnail\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/I-ES.jpg\",\n    \"status\": \"active\",\n    \"sub_status\": [],\n    \"tags\": [\n        \"immediate_payment\",\n        \"test_item\"\n    ],\n    \"warranty\": \"Garantía del vendedor: 90 días\",\n    \"catalog_product_id\": null,\n    \"domain_id\": \"MCO-WRISTWATCHES\",\n    \"seller_custom_field\": null,\n    \"parent_item_id\": null,\n    \"differential_pricing\": null,\n    \"deal_ids\": [],\n    \"automatic_relist\": false,\n    \"date_created\": \"2021-03-05T02:36:11.331Z\",\n    \"last_updated\": \"2021-03-05T02:36:11.331Z\",\n    \"health\": null,\n    \"catalog_listing\": false,\n    \"item_relations\": []\n}"
+							},
+							"response": []
+						},
+						{
+							"name": "Get descriptions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ml_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.mercadolibre.com/items/MCO610805679/description",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"items",
+										"MCO610805679",
+										"description"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an item",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ml_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"seller_custom_field\": \"B001TZLAZE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mercadolibre.com/items/MCO614926654",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"items",
+										"MCO614926654"
+									]
+								},
+								"description": "{\n    \"id\": \"MCO610567517\",\n    \"site_id\": \"MCO\",\n    \"title\": \"Mens Watches Ultra-thin Minimalist Waterproof\",\n    \"subtitle\": null,\n    \"seller_id\": 722134977,\n    \"category_id\": \"MCO1442\",\n    \"official_store_id\": null,\n    \"price\": 104904,\n    \"base_price\": 104904,\n    \"original_price\": null,\n    \"inventory_id\": null,\n    \"currency_id\": \"COP\",\n    \"initial_quantity\": 10,\n    \"available_quantity\": 10,\n    \"sold_quantity\": 0,\n    \"sale_terms\": [\n        {\n            \"id\": \"WARRANTY_TYPE\",\n            \"name\": \"Tipo de garantía\",\n            \"value_id\": \"2230280\",\n            \"value_name\": \"Garantía del vendedor\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": \"2230280\",\n                    \"name\": \"Garantía del vendedor\",\n                    \"struct\": null\n                }\n            ]\n        },\n        {\n            \"id\": \"WARRANTY_TIME\",\n            \"name\": \"Tiempo de garantía\",\n            \"value_id\": null,\n            \"value_name\": \"90 días\",\n            \"value_struct\": {\n                \"number\": 90,\n                \"unit\": \"días\"\n            },\n            \"values\": [\n                {\n                    \"id\": null,\n                    \"name\": \"90 días\",\n                    \"struct\": {\n                        \"number\": 90,\n                        \"unit\": \"días\"\n                    }\n                }\n            ]\n        }\n    ],\n    \"buying_mode\": \"buy_it_now\",\n    \"listing_type_id\": \"gold_special\",\n    \"start_time\": \"2021-03-05T02:36:10.947Z\",\n    \"stop_time\": \"2041-02-27T04:00:00.000Z\",\n    \"end_time\": \"2041-02-27T04:00:00.000Z\",\n    \"expiration_time\": \"2021-05-24T02:36:11.065Z\",\n    \"condition\": \"new\",\n    \"permalink\": \"http://articulo.mercadolibre.com.co/MCO-610567517-mens-watches-ultra-thin-minimalist-waterproof-_JM\",\n    \"pictures\": [\n        {\n            \"id\": \"999741-MCO45098738333_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"678158-MCO45098738327_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"964939-MCO45098738332_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"841694-MCO45098738330_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"705871-MCO45098738329_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"780037-MCO45098738328_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        },\n        {\n            \"id\": \"666773-MCO45098738331_032021\",\n            \"url\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"secure_url\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/O-ES.jpg\",\n            \"size\": \"500x500\",\n            \"max_size\": \"500x500\",\n            \"quality\": \"\"\n        }\n    ],\n    \"video_id\": \"YOUTUBE_ID_HERE\",\n    \"descriptions\": [\n        {\n            \"id\": \"MCO610567517-3286908414\"\n        }\n    ],\n    \"accepts_mercadopago\": true,\n    \"non_mercado_pago_payment_methods\": [],\n    \"shipping\": {\n        \"mode\": \"not_specified\",\n        \"local_pick_up\": false,\n        \"free_shipping\": false,\n        \"methods\": [],\n        \"dimensions\": null,\n        \"tags\": [\n            \"adoption_required\",\n            \"mandatory_free_shipping_available\"\n        ],\n        \"logistic_type\": \"not_specified\",\n        \"store_pick_up\": false\n    },\n    \"international_delivery_mode\": \"none\",\n    \"seller_address\": {\n        \"id\": \"\",\n        \"comment\": \"\",\n        \"address_line\": \"\",\n        \"zip_code\": \"\",\n        \"city\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"state\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"country\": {\n            \"id\": \"\",\n            \"name\": \"\"\n        },\n        \"latitude\": \"\",\n        \"longitude\": \"\",\n        \"search_location\": {\n            \"neighborhood\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            },\n            \"city\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            },\n            \"state\": {\n                \"id\": \"\",\n                \"name\": \"\"\n            }\n        }\n    },\n    \"seller_contact\": null,\n    \"location\": {},\n    \"geolocation\": {\n        \"latitude\": \"\",\n        \"longitude\": \"\"\n    },\n    \"coverage_areas\": [],\n    \"attributes\": [\n        {\n            \"id\": \"ITEM_CONDITION\",\n            \"name\": \"Condición del ítem\",\n            \"value_id\": \"2230284\",\n            \"value_name\": \"Nuevo\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": \"2230284\",\n                    \"name\": \"Nuevo\",\n                    \"struct\": null\n                }\n            ],\n            \"attribute_group_id\": \"\",\n            \"attribute_group_name\": \"\"\n        },\n        {\n            \"id\": \"GENDER\",\n            \"name\": \"Género\",\n            \"value_id\": null,\n            \"value_name\": \"GENDER\",\n            \"value_struct\": null,\n            \"values\": [\n                {\n                    \"id\": null,\n                    \"name\": \"GENDER\",\n                    \"struct\": null\n                }\n            ],\n            \"attribute_group_id\": \"OTHERS\",\n            \"attribute_group_name\": \"Otros\"\n        }\n    ],\n    \"warnings\": [\n        {\n            \"department\": \"shipping\",\n            \"cause_id\": 4029,\n            \"code\": \"shipping.me2_adoption_mandatory\",\n            \"message\": \"ME2 adoption is mandatory for the user\",\n            \"references\": [\n                \"shipping.modes\",\n                \"user.shipping_preferences.option\"\n            ]\n        }\n    ],\n    \"listing_source\": \"\",\n    \"variations\": [],\n    \"thumbnail_id\": \"999741-MCO45098738333_032021\",\n    \"thumbnail\": \"http://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/I-ES.jpg\",\n    \"secure_thumbnail\": \"https://http2.mlstatic.com/resources/frontend/statics/processing-image/1.0.0/I-ES.jpg\",\n    \"status\": \"active\",\n    \"sub_status\": [],\n    \"tags\": [\n        \"immediate_payment\",\n        \"test_item\"\n    ],\n    \"warranty\": \"Garantía del vendedor: 90 días\",\n    \"catalog_product_id\": null,\n    \"domain_id\": \"MCO-WRISTWATCHES\",\n    \"seller_custom_field\": null,\n    \"parent_item_id\": null,\n    \"differential_pricing\": null,\n    \"deal_ids\": [],\n    \"automatic_relist\": false,\n    \"date_created\": \"2021-03-05T02:36:11.331Z\",\n    \"last_updated\": \"2021-03-05T02:36:11.331Z\",\n    \"health\": null,\n    \"catalog_listing\": false,\n    \"item_relations\": []\n}"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Categories, listings, and attributes",
+					"item": [
+						{
+							"name": "Get listing types",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer APP_USR-5575075654822996-022620-e5709db096ebd41b9e603ff6e1daf24e-708063245",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.mercadolibre.com/sites/MCO/listing_types",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"sites",
+										"MCO",
+										"listing_types"
+									]
+								},
+								"description": "Example response:\n\n[\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_pro\",\n        \"name\": \"Premium\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_premium\",\n        \"name\": \"Oro Premium\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_special\",\n        \"name\": \"Clásica\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold\",\n        \"name\": \"Oro\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"silver\",\n        \"name\": \"Plata\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"bronze\",\n        \"name\": \"Bronce\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"free\",\n        \"name\": \"Gratuita\"\n    }\n]"
+							},
+							"response": []
+						},
+						{
+							"name": "Get categories list",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer APP_USR-5065493996956102-062213-9b13182de1e000e5872b0ea768b9c5fb-708045781"
+									}
+								],
+								"url": {
+									"raw": "https://api.mercadolibre.com/sites/MLM/categories",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"sites",
+										"MLM",
+										"categories"
+									]
+								},
+								"description": "Example response:\n\n[\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_pro\",\n        \"name\": \"Premium\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_premium\",\n        \"name\": \"Oro Premium\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold_special\",\n        \"name\": \"Clásica\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"gold\",\n        \"name\": \"Oro\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"silver\",\n        \"name\": \"Plata\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"bronze\",\n        \"name\": \"Bronce\"\n    },\n    {\n        \"site_id\": \"MCO\",\n        \"id\": \"free\",\n        \"name\": \"Gratuita\"\n    }\n]"
+							},
+							"response": []
+						},
+						{
+							"name": "Get a category's details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.mercadolibre.com/categories/MCO1430",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mercadolibre",
+										"com"
+									],
+									"path": [
+										"categories",
+										"MCO1430"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Official Mercado Libre API\n\nClient id:\n5575075654822996\n\nClient secret:\nhfAzqGc0aHUQXv4UipSxQDd9lWNeqj4p\n\nRedirect URI:\nhttps://amlapp.justinsalcedo.com"
+		},
+		{
+			"name": "Auth & User",
+			"item": [
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"example@mail.com\",\n    \"password\": \"0000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/signin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						},
+						"description": "Sign in with email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"0000\",\n    \"new_password\": \"abcd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/profile/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"profile",
+								"change-password"
+							]
+						},
+						"description": "Sign in with email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Update username and email",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"myexample@email.com\",\n    \"name\": \"Juanito Alcachofa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/profile/data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"profile",
+								"data"
+							]
+						},
+						"description": "Sign in with email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Get user data",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/profile/data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"profile",
+								"data"
+							]
+						},
+						"description": "Sign in with email and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Get user configuration status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/profile/configuration-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"profile",
+								"configuration-status"
+							]
+						},
+						"description": "Monitor the current user's configuration status"
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Jhon Doe\",\n    \"email\": \"example@mail.com\",\n    \"password\": \"0000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						},
+						"description": "Add a new user with name, email and password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ML Auth",
+			"item": [
+				{
+					"name": "Get auth url",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ml/access?origin_url=https://testapp.com/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ml",
+								"access"
+							],
+							"query": [
+								{
+									"key": "origin_url",
+									"value": "https://testapp.com/settings"
+								}
+							]
+						},
+						"description": "Get the Mercado Libre's auth url to be redirected to. Pass your app's accessing url as a query parameter"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth redirection (for ML server)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ml/auth?code=TG-62b365cf0249ae001328cefc-1147566865&state=https%3A%2F%2Ftestapp.com%2Fsettings%2F62b364963d8e29b4f63cda78%2F457920",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ml",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "TG-62b365cf0249ae001328cefc-1147566865"
+								},
+								{
+									"key": "state",
+									"value": "https%3A%2F%2Ftestapp.com%2Fsettings%2F62b364963d8e29b4f63cda78%2F457920"
+								}
+							]
+						},
+						"description": "Get the access code and state with the origing url as query parameters"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ML Items",
+			"item": [
+				{
+					"name": "Publish items by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  ml {\n    publishItemsByID(ids: $ids) {\n      id\n      site_id\n      title\n      subtitle\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      sale_terms {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      buying_mode\n      listing_type_id\n      start_time\n      condition\n      permalink\n      thumbnail\n      pictures {\n        url\n        size\n        id\n      }\n      descriptions {\n        id\n      }\n      location {\n        id\n        name\n      }\n      attributes {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      catalog_product_id\n      date_created\n    }\n  }\n}",
+								"variables": "{\n    \"ids\": [\n        \"62b7e7122503f28016303df9\",\n        \"62b7e7434660ffe9c08fd5b1\",\n        \"62b7e74f0ef8585042d27231\",\n        \"62b7e76532d7a2275e1ee9d1\",\n        \"62b7e770845018068c4898e3\"\n    ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unpublish items by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  ml {\n    unpublishItemsByID(ids: [\"604c968ed1743b00046229e3\"]) {\n      id\n      site_id\n      title\n      subtitle\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      sale_terms {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      buying_mode\n      listing_type_id\n      start_time\n      condition\n      permalink\n      thumbnail\n      pictures {\n        url\n        size\n        id\n      }\n      descriptions {\n        id\n      }\n      location {\n        id\n        name\n      }\n      attributes {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      catalog_product_id\n      date_created\n      status\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unpublish and delete items by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  ml {\n    unpublishAndDeleteItemsByID(ids: [\"6043af3c45fbb657ed07315f\"]) {\n      id\n      site_id\n      title\n      subtitle\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      sale_terms {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      buying_mode\n      listing_type_id\n      start_time\n      condition\n      permalink\n      thumbnail\n      pictures {\n        url\n        size\n        id\n      }\n      descriptions {\n        id\n      }\n      location {\n        id\n        name\n      }\n      attributes {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      catalog_product_id\n      date_created\n      status\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish all items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  ml {\n    publishAll {\n      id\n      site_id\n      title\n      subtitle\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      sale_terms {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      buying_mode\n      listing_type_id\n      start_time\n      condition\n      permalink\n      thumbnail\n      pictures {\n        url\n        size\n        id\n      }\n      descriptions {\n        id\n      }\n      location {\n        id\n        name\n      }\n      attributes {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      catalog_product_id\n      date_created\n      status\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all seller's items' IDs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  ml {\n    getAllItemIDs {\n      seller_id\n      results\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get many items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetItemsByID($ids: [String]!){\n  ml {\n    getItemsByMLID(ml_ids: $ids) {\n      id\n      site_id\n      title\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n    }\n  }\n}",
+								"variables": "{\n  \"ids\": [\n                    \"MCO611597911\",\n                    \"MCO611596755\",\n                    \"MCO611749082\"\n                ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get item descriptions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetDescriptions($ids: [String]!){\n  ml {\n    getItemDescriptionsByMLID(ml_ids: $ids) {\n      plain_text\n      last_updated\n      date_created\n    }\n  }\n}",
+								"variables": "{\n  \"ids\": [\n                    \"MCO611597911\",\n                    \"MCO611596755\",\n                    \"MCO611749082\"\n                ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all seller's items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  ml {\n    getAllItems(status: \"paused\") {\n      id\n      descriptions {\n          id\n      }\n      tags\n      site_id\n      title\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      status\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Amazon Auth",
+			"item": [
+				{
+					"name": "Add API key",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rapidapi_key\": \"{{rapidapi_key}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/amazon/auth/add-api-key",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"amazon",
+								"auth",
+								"add-api-key"
+							]
+						},
+						"description": "Post API key to use the Axesso Amazon API through Rapidapi"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Amazon Search",
+			"item": [
+				{
+					"name": "Search items by keywords",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query amazonSearch($searchOptions: SearchOptionsInputType){\n  amazon {\n    searchItemsByKeyword(searchOptions: $searchOptions) {\n      responseStatus\n      foundProducts\n      searchProductDetails {\n        asin\n        productDescription\n        imgUrl\n      }\n    }\n  }\n}",
+								"variables": "{\n  \"searchOptions\": {\n    \"keyword\": \"wallet\",\n    \"page\": 2\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get many items by URL",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GettingManyItems($productURLs: [String]!){\n  amazon {\n    getItemsByURL(productUrls: $productURLs) {\n      asin\n      categories\n      currency {\n        code\n        symbol\n      }\n      features\n      imageUrlList\n      mainImage {\n        imageUrl\n      }\n      price\n      productDescription\n      productDetails {\n        name\n        value\n      }\n      productTitle\n      variations {\n        variationName\n        values {\n          value\n          dpUrl\n          selected\n          available\n        }\n      }\n      warehouseAvailability\n    }\n  }\n}",
+								"variables": "{\n    \"productURLs\": [\n        \"https://www.amazon.com/HP-24mh-FHD-Monitor-Built/dp/B08BF4CZSV/ref=lp_16225007011_1_1\",\n        \"https://www.amazon.com/Anker-Extended-MacBook-Surface-Notebook/dp/B07L32B9C2/ref=lp_16225007011_1_10\",\n        \"https://www.amazon.com/Samsung-970-EVO-1TB-MZ-V7E1T0BW/dp/B07BN217QG/ref=lp_16225007011_1_12\"\n    ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						},
+						"description": "{\n    \"data\": {\n        \"amazon\": {\n            \"itemDetailsByURL\": {\n                \"asin\": \"B06W55K9N6\",\n                \"categories\": [\n                    \"Electronics\",\n                    \"Computers & Accessories\",\n                    \"Data Storage\",\n                    \"External Hard Drives\"\n                ],\n                \"currency\": null,\n                \"features\": [\n                    \"USB 3.0 and USB 2.0 Compatibility\",\n                    \"Fast data transfers\",\n                    \"Improve PC Performance\",\n                    \"High Capacity; Compatibility Formatted NTFS for Windows 10, Windows 8.1, Windows 7; Reformatting may be required for other operating systems; Compatibility may vary depending on user’s hardware configuration and operating system\",\n                    \"2 year manufacturer's limited warranty\"\n                ],\n                \"imageUrlList\": [\n                    \"https://images-na.ssl-images-amazon.com/images/I/71VB--jaeSL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71H31zMYAmL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81zWtK1esSL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71wlkeOC5TL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71hzyG9wjYL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71wlH9pfyUL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81nXbM9vi-L._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/812YQtef3PL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/61UYw5NWq2L._AC_SL1000_.jpg\"\n                ],\n                \"mainImage\": {\n                    \"imageUrl\": \"https://images-na.ssl-images-amazon.com/images/I/71VB--jaeSL._AC_SX679_.jpg\"\n                },\n                \"price\": 59.99,\n                \"productDescription\": \"WD Elements portable hard drives offer reliable, high-capacity storage, fast data transfer rates and universal connectivity with USB 3.0 and USB 2.0 devices to back up your photos, videos and files on the go.\",\n                \"productDetails\": [\n                    {\n                        \"name\": \"Number of USB 2.0 Ports\",\n                        \"value\": \"1\"\n                    },\n                    {\n                        \"name\": \"Brand\",\n                        \"value\": \"Western Digital\"\n                    },\n                    {\n                        \"name\": \"Series\",\n                        \"value\": \"WDBU6Y0020BBK-WESN\"\n                    },\n                    {\n                        \"name\": \"Item model number\",\n                        \"value\": \"WDBU6Y0020BBK-WESN\"\n                    },\n                    {\n                        \"name\": \"Hardware Platform\",\n                        \"value\": \"PC\"\n                    },\n                    {\n                        \"name\": \"Operating System\",\n                        \"value\": \"PC; Mac\"\n                    },\n                    {\n                        \"name\": \"Item Weight\",\n                        \"value\": \"4.7 ounces\"\n                    },\n                    {\n                        \"name\": \"Product Dimensions\",\n                        \"value\": \"4.35 x 3.23 x 0.59 inches\"\n                    },\n                    {\n                        \"name\": \"Item Dimensions LxWxH\",\n                        \"value\": \"4.35 x 3.23 x 0.59 inches\"\n                    },\n                    {\n                        \"name\": \"Color\",\n                        \"value\": \"Black\"\n                    },\n                    {\n                        \"name\": \"Computer Memory Type\",\n                        \"value\": \"DDR3 SDRAM\"\n                    },\n                    {\n                        \"name\": \"Flash Memory Size\",\n                        \"value\": \"2\"\n                    },\n                    {\n                        \"name\": \"Hard Drive Interface\",\n                        \"value\": \"USB 2.0/3.0\"\n                    },\n                    {\n                        \"name\": \"Hard Drive Rotational Speed\",\n                        \"value\": \"5400\"\n                    },\n                    {\n                        \"name\": \"Power Source\",\n                        \"value\": \"Bus Powered\"\n                    },\n                    {\n                        \"name\": \"Batteries\",\n                        \"value\": \"1 Lithium Polymer batteries required.\"\n                    },\n                    {\n                        \"name\": \"Manufacturer\",\n                        \"value\": \"Western Digital\"\n                    },\n                    {\n                        \"name\": \"ASIN\",\n                        \"value\": \"B06W55K9N6\"\n                    },\n                    {\n                        \"name\": \"Is Discontinued By Manufacturer\",\n                        \"value\": \"No\"\n                    },\n                    {\n                        \"name\": \"Date First Available\",\n                        \"value\": \"March 6, 2017\"\n                    },\n                    {\n                        \"name\": \"Customer Reviews\",\n                        \"value\": \"4.7 out of 5 stars 137,447 ratings 4.7 out of 5 stars\"\n                    },\n                    {\n                        \"name\": \"Best Sellers Rank\",\n                        \"value\": \"#2 in External Hard Drives\"\n                    }\n                ],\n                \"productTitle\": \"WD 2TB Elements Portable External Hard Drive HDD, USB 3.0, Compatible with PC, Mac, PS4 & Xbox - WDBU6Y0020BBK-WESN\",\n                \"variations\": [\n                    {\n                        \"variationName\": \"variation_style_name\",\n                        \"values\": []\n                    },\n                    {\n                        \"variationName\": \"variation_size_name\",\n                        \"values\": [\n                            {\n                                \"value\": \"1TB $47.99\",\n                                \"dpUrl\": \"/dp/B06VVS7S94/ref=twister_B08SKFSXMG?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"2TB $59.99\",\n                                \"dpUrl\": \"\",\n                                \"selected\": true,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"4TB $89.99\",\n                                \"dpUrl\": \"/dp/B0713WPGLL/ref=twister_B08SKFSXMG?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"5TB $99.99\",\n                                \"dpUrl\": \"/dp/B07X41PWTY/ref=twister_B08SKFSXMG?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            }\n                        ]\n                    }\n                ],\n                \"warehouseAvailability\": \"In Stock.\"\n            }\n        }\n    }\n}"
+					},
+					"response": []
+				},
+				{
+					"name": "Get item by ASIN",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  amazon {\n    getItemByASIN(asin: \"B086D4JNGM\") {\n      asin\n      categories\n      currency {\n        code\n        symbol\n      }\n      features\n      imageUrlList\n      mainImage {\n        imageUrl\n      }\n      price\n      productDescription\n      productDetails {\n        name\n        value\n      }\n      productTitle\n      variations {\n        variationName\n        values {\n          value\n          dpUrl\n          selected\n          available\n        }\n      }\n      warehouseAvailability\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						},
+						"description": "{\n    \"data\": {\n        \"amazon\": {\n            \"itemDetailsByASIN\": {\n                \"asin\": \"B07MB37YJ8\",\n                \"categories\": [\n                    \"Clothing, Shoes & Jewelry\",\n                    \"Men\",\n                    \"Watches\",\n                    \"Wrist Watches\"\n                ],\n                \"currency\": null,\n                \"features\": [],\n                \"imageUrlList\": [\n                    \"https://images-na.ssl-images-amazon.com/images/I/617FUjl3EXL._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71NZKAFUN5L._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71bYs-U%2BGqL._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81ouJpfaNLL._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71hE9w8lujL._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71kOp86G7iL._AC_UL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/61LFidza9SL._AC_UL1000_.jpg\"\n                ],\n                \"mainImage\": {\n                    \"imageUrl\": \"https://images-na.ssl-images-amazon.com/images/I/617FUjl3EXL._AC_UX679_.jpg\"\n                },\n                \"price\": 28.96,\n                \"productDescription\": \"Steel braided watchband adjustable and suitable for 99.99% wrists. (No hurt to body hairs on wrists) Easy to Adjustment of Watchband In this image, by the adjustment tool (gift in our fizili package), anyone can finish the adjustment of watchband within 1 minute. NOTE: In step 3, be sure the clasp be fasten in the notch on watchband surface, or it maybe difficult to close the clasp, and also easy to cause slipping off from your wrist. Note: The watch does not have a luminous lamp (the environment is almost completely invisible without light), and 3ATM is waterproof. It suits all occasions, all kinds of clothing, any style he can control. Perfect family gifts, gifts for friends, gifts for lovers, gifts for classmates ...    Matte Black: Always Black, Always Popular Combine Classic Colors, One for Anyone THE Color with Freedom, Beauty & Art New Year, New Gift. We are dedicated to making the best ultra-thin, best valueable fizili watches: Exactness, Elegance, Essence We have the best customer services here. If you have any questions about the watch, fiziliwatch website, facebook, etc, and we definitely will offer you a satisfactory solution.\",\n                \"productDetails\": [\n                    {\n                        \"name\": \"Is Discontinued By Manufacturer \",\n                        \"value\": \"No\"\n                    },\n                    {\n                        \"name\": \"Product Dimensions \",\n                        \"value\": \"5 x 5 x 0.7 inches; 2.08 Ounces\"\n                    },\n                    {\n                        \"name\": \"Item model number \",\n                        \"value\": \"2150\"\n                    },\n                    {\n                        \"name\": \"Department \",\n                        \"value\": \"Unisex-adult\"\n                    },\n                    {\n                        \"name\": \"Date First Available \",\n                        \"value\": \"December 29, 2018\"\n                    },\n                    {\n                        \"name\": \"Manufacturer \",\n                        \"value\": \"FIZILI\"\n                    },\n                    {\n                        \"name\": \"ASIN \",\n                        \"value\": \"B07MB37YJ8\"\n                    },\n                    {\n                        \"name\": \"Amazon Best Sellers Rank\",\n                        \"value\": \"#6,662 in Clothing, Shoes & Jewelry (See Top 100 in Clothing, Shoes & Jewelry) #10 in Men's Wrist Watches #441 in Boys' Fashion #484 in Girls' Fashion\"\n                    },\n                    {\n                        \"name\": \"Customer Reviews\",\n                        \"value\": \"4.3 out of 5 stars\"\n                    }\n                ],\n                \"productTitle\": \"Mens Watches Ultra-Thin Minimalist Waterproof - Fashion Wrist Watch for Men Unisex Dress with Stainless Steel Mesh Band\",\n                \"variations\": [\n                    {\n                        \"variationName\": \"variation_color_name\",\n                        \"values\": [\n                            {\n                                \"value\": \"Red\",\n                                \"dpUrl\": \"/dp/B07JC1Y5SG/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Black\",\n                                \"dpUrl\": \"\",\n                                \"selected\": true,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Blue\",\n                                \"dpUrl\": \"/dp/B07GB1R4FY/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Gold\",\n                                \"dpUrl\": \"/dp/B07GB29S2B/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Orange\",\n                                \"dpUrl\": \"/dp/B07PKDPSH9/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Purple\",\n                                \"dpUrl\": \"/dp/B07PH8NGYJ/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Silver\",\n                                \"dpUrl\": \"/dp/B07M6C2HJZ/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"White\",\n                                \"dpUrl\": \"/dp/B07PH8N42G/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"BLUE black\",\n                                \"dpUrl\": \"/dp/B07Y8BV4Y1/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Black silver\",\n                                \"dpUrl\": \"/dp/B07Y8BVZYJ/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Blue silver\",\n                                \"dpUrl\": \"/dp/B07Y8BV77Q/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Deep red\",\n                                \"dpUrl\": \"/dp/B08BHR7W8X/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"GOLD black\",\n                                \"dpUrl\": \"/dp/B07Y8CWCPP/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Gold silver\",\n                                \"dpUrl\": \"/dp/B07Y8CJ7H8/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Navy blue\",\n                                \"dpUrl\": \"/dp/B08BHLSWYV/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Red silver\",\n                                \"dpUrl\": \"/dp/B07Y8C63YH/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Silver silver\",\n                                \"dpUrl\": \"/dp/B07Y87DWB2/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"bright blue\",\n                                \"dpUrl\": \"/dp/B07Y8BR18N/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"bright blue gold\",\n                                \"dpUrl\": \"/dp/B07Y8C1NL6/ref=twister_B08HN2TTG2?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            }\n                        ]\n                    }\n                ],\n                \"warehouseAvailability\": \"In Stock.\"\n            }\n        }\n    }\n}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stage",
+			"item": [
+				{
+					"name": "Get items by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    getItemsByID(ids: [\"604b32d000417c35e6f756ab\"]) {\n      _id\n      published_by\n      ml_data {\n        title\n        category_id\n        price\n        currency_id\n        available_quantity\n        buying_mode\n        condition\n        listing_type_id\n        video_id\n        sale_terms {\n            id\n            value_name\n        }\n        pictures {\n            source\n        }\n        description {\n          plain_text\n        }\n        attributes {\n          id\n          value_name\n        }\n      }\n      ml_id\n      amazon_data {\n          asin\n          price\n          productDescription\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get items by ASIN",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    getItemsByASIN(asins: [\"B07MB37YJ8\"]) {\n      _id\n      published_by\n      ml_data {\n        title\n        category_id\n        price\n        available_quantity\n        condition\n        description {\n          plain_text\n        }\n        attributes {\n          id\n          value_name\n        }\n      }\n      ml_id\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    getAllItems {\n      _id\n      allow_sync\n      ml_data {\n          title\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search items by keyword",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    searchItemsByKeyword(keyword: \"bluetooth\") {\n      _id\n      published_by\n      ml_data {\n        title\n        category_id\n        price\n        available_quantity\n        condition\n        description {\n          plain_text\n        }\n        attributes {\n          id\n          value_name\n        }\n      }\n      ml_id\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get allowed categories' IDs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n    stage {\n        getAllowedCategoriesIDs\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all published items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    getPublishedItems {\n      _id\n      ml_data {\n          title\n          subtitle\n          price\n      }\n      ml_id\n      amazon_data {\n          asin\n          warehouseAvailability\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all no-published items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  stage {\n    getNoPublishedItems {\n      _id\n      ml_data {\n          title\n          subtitle\n          price\n      }\n      ml_id\n      amazon_data {\n          asin\n          warehouseAvailability\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stage items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation StagingItems($amazonItems: [ItemMinimumDetailsInputType]!){\n  stage {\n    stageItems(amazon_items: $amazonItems) {\n      _id\n      published_by\n      allow_sync\n      ml_data {\n        title\n        subtitle\n        category_id\n        price\n        official_store_id\n        currency_id\n        available_quantity\n        buying_mode\n        condition\n        listing_type_id\n        description {\n          plain_text\n        }\n        video_id\n        sale_terms {\n          id\n          value_name\n        }\n        pictures {\n          source\n        }\n        attributes {\n          id\n          value_name\n        }\n      }\n      amazon_data {\n        asin\n        currency {\n          symbol\n          code\n        }\n        features\n        imageUrlList\n        price\n        productDescription\n        productDetails {\n          name\n          value\n        }\n        productTitle\n        variations {\n          variationName\n          values {\n            value\n            dpUrl\n            available\n          }\n        }\n        warehouseAvailability\n      }\n    }\n  }\n}",
+								"variables": "{\n    \"amazonItems\": [\n        {\n                \"asin\": \"B086D4JNGM\",\n                \"features\": [\n                    \"Reproduce alto con sonido de graves extra y modo de sonido en vivo.\",\n                    \"Construido para durar con un diseño IP67 resistente al agua, al óxido, al polvo y a los golpes.\",\n                    \"Dura todo el día con hasta 24 horas de duración de la batería.\",\n                    \"La unidad de altavoz X-Balanced mejora la calidad del sonido y la potencia.\",\n                    \"Aumenta tu música con dos luces de altavoz y luces de línea multicolor y enciende o apaga las luces a través de la aplicación Fiestable.\",\n                    \"Obtenga cosas en movimiento con Party Connect y sincronice hasta 100 altavoces.\",\n                    \"La función de altavoz ofrece una manera conveniente de hablar con manos libres, ya sea una llamada de conferencia para el trabajo o una charla con amigos.\"\n                ],\n                \"imageUrlList\": [\n                    \"https://images-na.ssl-images-amazon.com/images/I/81NfNapLYxL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81qUDCnM4xL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/91KZ1i1DG1L._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/918O71NwLDL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81kq6DG9IKL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/813sRQglCJL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/914GBbFF6qL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/813p%2BeOHVDL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/91lT75mh9IL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81G-0OScsML._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/81ayGhbVu%2BL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/812-HSFpINL._AC_SL1500_.jpg\"\n                ],\n                \"price\": 14.99,\n                \"productDescription\": \"Bring powerful sound to any space with the XB33 Wireless Speaker EXTRA BASS performance creates clear full sound with up to 24 hours of battery life The IP67 waterproof rustproof dustproof and shockproof design is equipped for anywhere life takes you Take further control over your favorite music with the Sony , Music Center app\",\n                \"productDetails\": [\n                    {\n                        \"name\": \"Dimensiones del producto\",\n                        \"value\": \"10.39 x 4.96 x 5.35 pulgadas\"\n                    },\n                    {\n                        \"name\": \"Peso del producto\",\n                        \"value\": \"2.42 pounds\"\n                    },\n                    {\n                        \"name\": \"Fabricante\",\n                        \"value\": \"Sony\"\n                    },\n                    {\n                        \"name\": \"ASIN\",\n                        \"value\": \"B086D4JNGM\"\n                    },\n                    {\n                        \"name\": \"Número de modelo del producto\",\n                        \"value\": \"SRSXB33/B\"\n                    },\n                    {\n                        \"name\": \"Pilas\",\n                        \"value\": \"1 Iones de litio necesaria(s), incluida(s)\"\n                    },\n                    {\n                        \"name\": \"Opinión media de los clientes\",\n                        \"value\": \"4.7 de 5 estrellas 6,619 calificaciones 4.7 de 5 estrellas\"\n                    },\n                    {\n                        \"name\": \"Clasificación en los más vendidos de Amazon\",\n                        \"value\": \"nº71 en Bocinas Portátiles con Bluetooth nº1,048 en Accesorios de Reproductores de MP3\"\n                    },\n                    {\n                        \"name\": \"Producto en amazon.com desde\",\n                        \"value\": \"Mayo 11, 2020\"\n                    }\n                ],\n                \"productTitle\": \"Sony EXTRA BASS - Altavoz inalámbrico (IP67, Bluetooth) SRSXB33. Negro\",\n                \"variations\": [\n                    {\n                        \"variationName\": \"variation_style_name\",\n                        \"values\": [\n                            {\n                                \"value\": \"SRSXB33.\",\n                                \"dpUrl\": \"\",\n                                \"selected\": true,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"SRSXB43\",\n                                \"dpUrl\": \"/dp/B086CYQ22F/ref=twister_B088TTT8MV?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"SRSXB23.\",\n                                \"dpUrl\": \"/dp/B086DBR6T7/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            }\n                        ]\n                    },\n                    {\n                        \"variationName\": \"variation_color_name\",\n                        \"values\": [\n                            {\n                                \"value\": \"Negro\",\n                                \"dpUrl\": \"\",\n                                \"selected\": true,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Negro XB23\",\n                                \"dpUrl\": \"/dp/B086DBR6T7/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            },\n                            {\n                                \"value\": \"Azul\",\n                                \"dpUrl\": \"/dp/B086DJDN9F/ref=twister_B088TTT8MV?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Rojo coral\",\n                                \"dpUrl\": \"/dp/B086CYQ22C/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            },\n                            {\n                                \"value\": \"Azul claro\",\n                                \"dpUrl\": \"/dp/B086DDP55B/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            },\n                            {\n                                \"value\": \"Olive Green\",\n                                \"dpUrl\": \"/dp/B086DG94R2/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            },\n                            {\n                                \"value\": \"Rojo\",\n                                \"dpUrl\": \"/dp/B086D2G64Q/ref=twister_B088TTT8MV?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Marrón topo\",\n                                \"dpUrl\": \"/dp/B086DLZRPP/ref=twister_B088TTT8MV?_encoding=UTF8&psc=1\",\n                                \"selected\": false,\n                                \"available\": true\n                            },\n                            {\n                                \"value\": \"Gris pardo XB23\",\n                                \"dpUrl\": \"/dp/B086DCMCH9/ref=twister_B088TTT8MV\",\n                                \"selected\": false,\n                                \"available\": false\n                            }\n                        ]\n                    }\n                ],\n                \"warehouseAvailability\": \"Disponible.\"\n        },\n      {\n                \"asin\": \"B08319XH53\",\n                \"features\": [\n                    \"Este reproductor de DVD región 1 soporta formato de disco: CD, DVD, DVD-R/+R, DVD-/+RW, CD-R/-RW, VCD, SVCD. No habrá límite en tu elección de disco y proporciona el máximo placer de visualización y escucha. Nota: no es compatible con discos Blu-ray.\",\n                    \"Fácil de usar: compacto y simple, es fácil de conectar y entretener. Con el mando a distancia, puedes configurar fácilmente el reproductor de DVD.\",\n                    \"Puerto USB integrado: proporciona un ambiente relajante y cómodo, puedes leer fácilmente tu vídeo, imagen y música desde la unidad flash USB, disfruta sin ningún tipo de molestia. Nota: el reproductor de DVD solo puede soportar memorias USB de hasta 16 GB y reproducir archivos de vídeo de 720 x 480/576 (AVI/DIVX/MPG/MPEG4/VOB).\",\n                    \"Conexión HDMI y AV: el reproductor de DVD tiene 1 salida HDMI y 1 salida de vídeo/audio compuesta (RCAx3). Puedes conectarte a tu televisor Home o proyector. Cable HDMI y AV incluido.\",\n                    \"Embalaje: 1 reproductor de DVD, 1 mando a distancia (batería no incluida), 1 cable HDMI, 1 cable AV, 1 manual de usuario (idioma español no garantizado), 1 política de devoluciones de 12 meses, servicio al cliente 24 horas, 90 días reembolso completo sin ningún motivo (proporcionado por el vendedor).\"\n                ],\n                \"imageUrlList\": [\n                    \"https://images-na.ssl-images-amazon.com/images/I/61qp67eI4eL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/61kRcO1B5GL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71vg6QAOKeL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71VuuwulD8L._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71xkT6bPndL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71k9wQ0iXiL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71SbMEQ627L._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/812LXjCpUSL._AC_SL1500_.jpg\",\n                    \"https://images-na.ssl-images-amazon.com/images/I/71w2eV-tNFL._AC_SL1500_.jpg\"\n                ],\n                \"price\": 39.99,\n                \"productDescription\": \"Ceihoit Mini reproductor de DVD portátil Nuestro reproductor de DVD proporciona un fácil acceso a todos sus medios favoritos. Es una gran manera de garantizar un entretenimiento de calidad en cuestión de minutos. Conectar TV/proyector Con salida HDMI y salida de vídeo compuesto/audio (RCAx3), conecte su televisor y sistemas de audio para un audio de alta calidad y una experiencia de entretenimiento mejorada al ver sus películas, programas y deportes favoritos. Contenido del paquete: 1* reproductor de DVD 1* Control remoto 1* Cable AV 1* Cable HDMI 1* Manual del usuario 1* Cargador de alimentación USB y cable Consejos cálidos: 1. Hay un sonido de ruido normal si reproduce un disco viejo o rayado. Si has encontrado el sonido de ruido cuando reproduces un disco nuevo, ponte en contacto con el vendedor para un reemplazo. 2. Si encontró que hay una falta de accesorios, póngase en contacto con el vendedor para obtener un reemplazo totalmente gratuito. Reproductor de DVD portátil Altura: 1.7 pulgadas Longitud: 7.3 pulgadas Ancho: 6.7 pulgadas Peso neto: 1.1lb Puerto de carga de energía: Micro USB (entrada 5V 2A), Adecuado para uso exterior, por ejemplo, banco de energía móvil. (Un cargador de alimentación USB y cable incluido) Discos de la región 1 soportados: Este reproductor de DVD libre de la región admite formato de disco: DVD / DVD-R / DVD + R / DVD + RW / DVD-RW / DVD-9; VCD / CDDA / HDCD / CDG, CD-R / CD-RW. No más preocupaciones por el formato de disco. Nota: No es compatible con discos Blu-ray. Región 1: EE.UU. y CANADÁ Unidad flash USB compatible Puerto USB integrado para reproducir archivos multimedia digitales, tan fácil de usar, puede disfrutar de vídeo suave y detallado desde USB, ofreciendo una excelente experiencia de cine en casa. A través de USB, puede sopport para jugar: Vídeo de hasta 720* 576: AVI, DIVX, VOB, MPG, MPEG4 (no mp4), FLV Audio: MP3, WMA, MPEG1.\",\n                \"productDetails\": [\n                    {\n                        \"name\": \"Nombre de marca\",\n                        \"value\": \"Ceihoit\"\n                    },\n                    {\n                        \"name\": \"Peso del producto\",\n                        \"value\": \"1.1 pounds\"\n                    },\n                    {\n                        \"name\": \"Dimensiones del producto\",\n                        \"value\": \"7.3 x 6 x 1.7 pulgadas\"\n                    },\n                    {\n                        \"name\": \"ASIN\",\n                        \"value\": \"B08319XH53\"\n                    },\n                    {\n                        \"name\": \"Opinión media de los clientes\",\n                        \"value\": \"4.4 de 5 estrellas 2,084 calificaciones 4.4 de 5 estrellas\"\n                    },\n                    {\n                        \"name\": \"Clasificación en los más vendidos de Amazon\",\n                        \"value\": \"nº747 en Electrónica (Ver el Top 100 en Electrónica) nº2 en Reproductores de HD DVD nº6 en Reproductores de DVD\"\n                    },\n                    {\n                        \"name\": \"Producto en amazon.com desde\",\n                        \"value\": \"Diciembre 23, 2019\"\n                    }\n                ],\n                \"productTitle\": \"Mini reproductor de DVD, reproductor de CD/disco de DVD para TV con salida HDMI/AV, cables HDMI/AV incluidos, compatible con HD 1080P incorporado sistema PAL/NTSC entrada USB\",\n                \"variations\": [],\n                \"warehouseAvailability\": \"Disponible.\"\n            }\n    ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auto-stage items by ASIN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation autoStage($asins: [String]!) {\n  stage {\n    autoStageItemsByASIN(asins: $asins) {\n      _id\n      published_by\n      allow_sync\n      ml_data {\n        title\n        subtitle\n        category_id\n        price\n        official_store_id\n        currency_id\n        available_quantity\n        buying_mode\n        condition\n        listing_type_id\n        description {\n          plain_text\n        }\n        video_id\n        sale_terms {\n          id\n          value_name\n        }\n        pictures {\n          source\n        }\n        attributes {\n          id\n          value_name\n        }\n      }\n      amazon_data {\n        asin\n        currency {\n          symbol\n          code\n        }\n        features\n        imageUrlList\n        price\n        productDescription\n        productDetails {\n          name\n          value\n        }\n        productTitle\n        variations {\n          variationName\n          values {\n            value\n            dpUrl\n            available\n          }\n        }\n        warehouseAvailability\n      }\n    }\n  }\n}",
+								"variables": "{\n    \"asins\": [\n        \"B097GLJ758\",\n        \"B0B18VM3GJ\",\n        \"B09TGZN1R4\"\n    ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update ML Data per item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  stage {\n    updateMLInputDataByID(id: \"6043edbda3e7196ef3ab87cc\", ml_data: {\n      description: {\n          plain_text: \"Dokotoo always keep the faith that fashion is a kind of catalyst to make lift more colorful. And in that catalyst we can improve and develop. Agile reply and all-round service provide our customers great shopping experience and heartening style. Fashion trends change, products change, our commitment to every one customer won’t. Size Chart For : B Blue &B Green & B Leopard & B White SIZE(UNIT:INCH)----LOW ELASTICITY Small Bust--36.61 Waist--27.56 Sleeve-Length-20.47 Length--34.25 Medium Bust--38.58 Waist--29.53 Sleeve-Length-20.87 Length--35.04 Large Bust--40.94 Waist--31.89 Sleeve-Length-21.26 Length--35.83 X-Large Bust--44.09 Waist--35.04 Sleeve-Length-21.65 Length--36.61           \"\n      }\n    }) {\n      _id\n      ml_data {\n        description {\n            plain_text\n        }\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set custom parameters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  stage {\n    setCustomParameters(sync_concurrency_in_hours: 36, profit_margin: 10, is_profit_percentage: true) {\n      sync_concurrency_in_hours\n      profit_margin\n      is_profit_percentage\n      listing_type_id\n      local_currency_code\n      item_condition\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Turn off synchronization for items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation TurnSyncOff($ids: [String]!){\n  stage {\n    turnItemsSyncOff(ids: $ids) {\n      ok\n      n\n      nModified\n    }\n  }\n}",
+								"variables": "{\n  \"ids\": [\n    \"606acfd3db0d6a11056e9745\",\n    \"606ad030db0d6a11056e9770\",\n    \"606ad009db0d6a11056e9759\"\n  ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync items manually",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  stage {\n    syncManuallyByID(ids: [\"604b32d000417c35e6f756ab\", \"604b389b7ee92d4302c7727d\"]) {\n      id\n      site_id\n      title\n      subtitle\n      seller_id\n      category_id\n      price\n      currency_id\n      available_quantity\n      sale_terms {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      buying_mode\n      listing_type_id\n      start_time\n      condition\n      permalink\n      thumbnail\n      pictures {\n        url\n        size\n        id\n      }\n      descriptions {\n        id\n      }\n      location {\n        id\n        name\n      }\n      attributes {\n        name\n        values {\n          id\n          name\n        }\n        value_id\n        value_name\n        value_struct {\n          unit\n          number\n        }\n      }\n      catalog_product_id\n      date_created\n      status\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Turn on synchronization for items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation TurnSyncOn($ids: [String]!){\n  stage {\n    turnItemsSyncOn(ids: $ids) {\n      ok\n      n\n      nModified\n    }\n  }\n}",
+								"variables": "{\n  \"ids\": [\n    \"604c968ed1743b00046229e3\",\n    \"604c968ed1743b00046229f6\"\n  ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete items by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\n  stage {\n    deleteItemsByID(ids: [\"603ea12ea938fef20f1e202b\"]) {\n      ok\n      n\n      deletedCount\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Server status",
+			"request": {
+				"method": "HEAD",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_token",
+			"value": ""
+		},
+		{
+			"key": "ml_token",
+			"value": ""
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		},
+		{
+			"key": "admin_ml_token",
+			"value": ""
+		},
+		{
+			"key": "rapidapi_key",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": "https://amlapp.herokuapp.com"
+		}
+	]
+}

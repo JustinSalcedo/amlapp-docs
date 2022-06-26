@@ -1,0 +1,323 @@
+openapi: 3.1.0
+x-stoplight:
+  id: z55xgugfl8o1r
+info:
+  title: Auth & User
+  version: '1.0'
+  summary: 'Setup credentials, manage tokens, and retrieve user data'
+  description: 'Before using AMLApp, you must authenticate the user and use his JSON Web Token to authorize every request. After authentication,  the user may get or edit his credentials and custom parameters.'
+  contact:
+    name: Justin Salcedo
+    url: 'https://justinsalcedo.com'
+    email: web@justinsalcedo.com
+  license:
+    name: MIT License
+    url: 'https://github.com/JustinSalcedo/amlapp/blob/master/LICENSE'
+servers:
+  - url: 'https://amlapp.herokuapp.com/api'
+    description: AMLApp API Endpoint
+paths:
+  /auth/signup:
+    post:
+      summary: Create New User
+      operationId: post-auth-signup
+      responses:
+        '201':
+          $ref: '#/components/responses/UserAndToken'
+      description: Register a new user.
+      parameters:
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Accept'
+      requestBody:
+        $ref: '#/components/requestBodies/New-User'
+  /auth/signin:
+    post:
+      summary: Log In User
+      operationId: post-auth-signin
+      responses:
+        '200':
+          $ref: '#/components/responses/UserAndToken'
+      description: Log in a returning user.
+      parameters:
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Accept'
+      requestBody:
+        $ref: '#/components/requestBodies/User-Credentials'
+    parameters: []
+  /auth/logout:
+    post:
+      summary: Log Out User
+      operationId: post-auth-logout
+      responses:
+        '200':
+          description: OK
+      description: Log out the current user.
+      parameters:
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Accept'
+      security:
+        - UserJWT: []
+  /user/profile/change-password:
+    post:
+      summary: Change Password
+      operationId: post-user-profile-change-password
+      responses:
+        '200':
+          $ref: '#/components/responses/UserAndToken'
+      description: Change password through validation.
+      security:
+        - UserJWT: []
+      parameters:
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Accept'
+      requestBody:
+        $ref: '#/components/requestBodies/Change-Password'
+  /user/profile/data:
+    get:
+      summary: Get User Data
+      responses:
+        '200':
+          $ref: '#/components/responses/User-Data'
+      operationId: get-user-profile-data
+      description: 'Get user data, items, and custom settings.'
+      security:
+        - UserJWT: []
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+    patch:
+      summary: Update Username and Email
+      operationId: patch-user-profile-data
+      responses:
+        '200':
+          $ref: '#/components/responses/User-Data'
+      description: Update basic user credentials.
+      security:
+        - UserJWT: []
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+  /user/profile/configuration-status:
+    get:
+      summary: Get User Configuration Status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  configuration_status:
+                    type: object
+                    properties:
+                      configuration_complete:
+                        type: boolean
+                      mercado_libre_authorization:
+                        type: boolean
+                      rapidapi_key_added:
+                        type: boolean
+                x-examples:
+                  example-1:
+                    configuration_status:
+                      configuration_complete: false
+                      mercado_libre_authorization: false
+                      rapidapi_key_added: false
+      operationId: get-user-profile-configuration-status
+      description: Check Amazon API and Mercado Libre account configuration status.
+      security:
+        - UserJWT: []
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+components:
+  schemas:
+    New-User:
+      title: New-User
+      type: object
+      description: Name and credentials
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - name
+        - email
+        - password
+    User-Credentials:
+      title: User-Credentials
+      type: object
+      description: Email and password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+    User-Data:
+      type: object
+      properties:
+        role:
+          type: string
+        custom_parameters:
+          type: object
+          properties:
+            profit_margin:
+              type: integer
+            is_profit_percentage:
+              type: boolean
+            default_quantity:
+              type: integer
+            buying_mode:
+              type: string
+            item_condition:
+              type: string
+            listing_type_id:
+              type: string
+            sale_terms:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  value_name:
+                    type: string
+            local_currency_code:
+              type: string
+            sync_concurrency_in_hours:
+              type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties: {}
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        __v:
+          type: integer
+      x-examples:
+        example-1:
+          role: user
+          custom_parameters:
+            profit_margin: 0
+            is_profit_percentage: false
+            default_quantity: 10
+            buying_mode: buy_it_now
+            item_condition: new
+            listing_type_id: gold_special
+            sale_terms:
+              - id: WARRANTY_TYPE
+                value_name: Garantía del vendedor
+              - id: WARRANTY_TIME
+                value_name: 90 días
+            local_currency_code: MXN
+            sync_concurrency_in_hours: 24
+          items: []
+          _id: 62b3dd81bd02b4001656e533
+          name: Jhon Doe
+          email: example2@mail.com
+          createdAt: '2022-06-23T03:26:57.677Z'
+          updatedAt: '2022-06-23T03:26:57.677Z'
+          __v: 0
+      examples:
+        - role: string
+          custom_parameters:
+            profit_margin: 0
+            is_profit_percentage: true
+            default_quantity: 0
+            buying_mode: string
+            item_condition: string
+            listing_type_id: string
+            sale_terms:
+              - id: string
+                value_name: string
+            local_currency_code: string
+            sync_concurrency_in_hours: 0
+          items:
+            - {}
+          _id: string
+          name: string
+          email: string
+          createdAt: string
+          updatedAt: string
+          __v: 0
+  securitySchemes:
+    UserJWT:
+      type: http
+      scheme: bearer
+  parameters:
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      schema:
+        type: string
+        default: application/json
+        example: application/json
+      description: application/json
+    Accept:
+      name: Accept
+      in: header
+      required: true
+      schema:
+        type: string
+        default: '*/*'
+        example: '*/*'
+      description: '*/*'
+  requestBodies:
+    New-User:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/New-User'
+      description: ''
+    User-Credentials:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User-Credentials'
+      description: Email and password
+    Change-Password:
+      content:
+        application/json:
+          schema:
+            type: object
+  responses:
+    UserAndToken:
+      description: User data and JWT token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/components/schemas/User-Data'
+              token:
+                type: string
+            required:
+              - user
+              - token
+    User-Data:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/components/schemas/User-Data'

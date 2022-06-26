@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: Amazon-Auth
+  version: '1.0'
+  summary: Add RapidAPI Key to star using Axesso's Amazon web srapper
+  description: 'The Axesso''s Amazon web scrapper gives us access to bulk product views in real-time. We can lookup for product details and more useful data. Documentation can be found at http://api-doc.axesso.de/#api-Amazon.'
+  contact:
+    name: Justin Salcedo
+    url: 'https://justinsalcedo.com'
+    email: web@justinsalcedo.com
+  license:
+    name: MIT License
+    url: 'https://github.com/JustinSalcedo/amlapp/blob/master/LICENSE'
+servers:
+  - url: 'https://amlapp.herokuapp.com/api'
+    description: AMLApp API Endpoint
+paths:
+  /amazon/auth/add-api-key:
+    post:
+      summary: Add API Key
+      operationId: post-amazon-auth-add-api-key
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      description: Add RapidAPI key to access Axesso's API.
+      parameters:
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/ML-Auth_Accept'
+      security:
+        - UserJWT: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rapidapi_key:
+                  type: string
+              required:
+                - rapidapi_key
+        description: ''
+components:
+  securitySchemes:
+    UserJWT:
+      type: http
+      scheme: bearer
+  parameters:
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      schema:
+        type: string
+        default: application/json
+        example: application/json
+      description: application/json
+    Accept:
+      name: Accept
+      in: header
+      required: true
+      schema:
+        type: string
+        default: '*/*'
+        example: '*/*'
+      description: '*/*'
+    ML-Auth_Accept:
+      name: Accept
+      in: header
+      required: true
+      schema:
+        type: string
+        default: '*/*'
+        example: '*/*'
+      description: '*/*'
+  requestBodies: {}
+  responses: {}

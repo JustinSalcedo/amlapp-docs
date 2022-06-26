@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: ML-Auth
+  version: '1.0'
+  summary: 'Sign the user in '
+  description: AMLApp generates the redirection URL for the user to sign in his Mercado Libre account and authorize the App to publish items in the user's behalf.
+  contact:
+    name: Justin Salcedo
+    url: 'https://justinsalcedo.com'
+    email: web@justinsalcedo.com
+  license:
+    name: MIT License
+    url: 'https://github.com/JustinSalcedo/amlapp/blob/master/LICENSE'
+servers:
+  - url: 'https://amlapp.herokuapp.com/api'
+    description: AMLApp API Endpoint
+paths:
+  /ml/access:
+    get:
+      summary: Get Auth URL
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirectUrl:
+                    type: string
+                    format: uri
+                required:
+                  - redirectUrl
+              examples:
+                example-1:
+                  value:
+                    redirectUrl: 'https://auth.mercadolibre.com.mx/authorization?response_type=code&client_id=0205730184629437&state=https://app-client.com/dashboard/b62b0016023dd8145356ebd3/295529&redirect_uri=https://amlapp.herokuapp.com/ml/auth'
+      operationId: get-ml-access
+      description: Request an authorized URL and redirect the user to log into Mercado Libre.
+      security:
+        - UserJWT: []
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+        - schema:
+            type: string
+            format: uri
+            example: 'https://app-client.com/dashbord'
+          in: query
+          name: origin_url
+          description: Redirect the user to this URL once authenticated
+          required: true
+  /ml/auth:
+    get:
+      summary: Auth Redirection (by ML server)
+      responses:
+        '302':
+          description: Found. Redirect to client URL once authenticated.
+      operationId: get-ml-auth
+      description: 'Once authenticated, Mercado Libre redirects the user agent to this endpoint to exchange the access code; this route is referenced for developmental purposes only.'
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+        - schema:
+            type: string
+            example: TG-062492b365cfae001328csdhc-1148675665
+          in: query
+          name: code
+          required: true
+          description: ML access code
+        - schema:
+            type: string
+          in: query
+          name: state
+          required: true
+          description: Stablish flow security
+components:
+  schemas: {}
+  securitySchemes:
+    UserJWT:
+      type: http
+      scheme: bearer
+  parameters:
+    Accept:
+      name: Accept
+      in: header
+      required: true
+      schema:
+        type: string
+        default: '*/*'
+        example: '*/*'
+      description: '*/*'
+  requestBodies: {}
+  responses: {}
