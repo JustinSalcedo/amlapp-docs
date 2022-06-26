@@ -147,7 +147,7 @@ Start looking up for Amazon products by interacting with the GraphQL API at `/ap
 
 Browse a list of Amazon products by matching product titles and descriptions; specifying a page number allows you to browse the actual Amazon site deeper.
 
- ![AML - Search items by keywords](screenshots/AML - Search items by keywords.png)
+ ![AML - Search items by keywords](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/AML%20-%20Search%20items%20by%20keywords.png)
 > You can directly look up for products using a list of URLs or ASINs.
 
 You'll get a list of items depending on the fields specified:
@@ -190,7 +190,7 @@ In practice, the request will contain tens of products, which are all the listin
 
 ### Auto-stage items by ASIN
 
-![AML - Autostage by ASINs](screenshots/AML - Autostage by ASINs.png)
+![AML - Autostage by ASINs](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/AML%20-%20Autostage%20by%20ASINs.png)
 
 Once staged, you'll receive a list of items like this one:
 
@@ -331,7 +331,7 @@ Before publishing, ensure your products get listed with the right configuration 
 
 > If you set `is_profit_percentage: true`, your profit margin will a percentage of the item's price; else, it will be an added fixed margin in the item's currency.
 
-![AML - Set custom params](screenshots/AML - Set custom params.png)
+![AML - Set custom params](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/AML%20-%20Set%20custom%20params.png)
 
 A confirmation response will be like this:
 
@@ -358,7 +358,7 @@ Use the list of your staged items' IDs and publish them once you've made the rig
 
 > If you modify an staged item's data, you may want to deactivate auto-sync to avoid AMLapp to override your changes.
 
-![AML - Publishing items](screenshots/AML - Publishing items.png)
+![AML - Publishing items](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/AML%20-%20Publishing%20items.png)
 
 AMLApp will replay with an updated list of those staged items now published.
 
@@ -366,7 +366,7 @@ AMLApp will replay with an updated list of those staged items now published.
 
 Now just head up to your ML account and get ready to start selling! 😃
 
-![AML - Publishing items](screenshots/ML - Start selling.png)
+![AML - Publishing items](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/ML%20-%20Start%20selling.png)
 
 ## Resources
 
