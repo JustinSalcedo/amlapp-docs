@@ -368,6 +368,13 @@ Now just head up to your ML account and get ready to start selling! 😃
 
 ![AML - Publishing items](https://github.com/JustinSalcedo/amlapp-docs/raw/master/screenshots/ML%20-%20Start%20selling.png)
 
+## Documentation
+
+- [Authorization and User Data](https://github.com/JustinSalcedo/amlapp-docs/blob/master/Auth-and-User.md)
+- [Axesso's Amazon API Setup](https://github.com/JustinSalcedo/amlapp-docs/blob/master/Amazon-Auth.md)
+- [Mercado Libre Authorization Flow](https://github.com/JustinSalcedo/amlapp-docs/blob/master/ML-Auth.md)
+- [GraphQL Dashboard Schemas](https://github.com/JustinSalcedo/amlapp-docs/blob/master/Dashboard-Schemas.md)
+
 ## Resources
 
 A give credit to these technologies and providers that made this project possible:
@@ -375,7 +382,7 @@ A give credit to these technologies and providers that made this project possibl
 - [Node.js](https://nodejs.org/en/) (server)
 - [GraphQL](https://graphql.org/) (API query language)
 - [OpenAPI](https://www.openapis.org/) (API documentation specification)
-- [Postman](https://www.postman.com/) (get the exported docs [here](AMLApp.postman_collection.json))
+- [Postman](https://www.postman.com/) (get the exported docs [here](https://github.com/JustinSalcedo/amlapp-docs/blob/master/package-lock.json))
 - [RapidAPI](https://rapidapi.com/hub) (API marketplace)
 - [Axesso Amazon API](https://rapidapi.com/axesso/api/axesso-amazon-data-service1) (check the [docs](http://api-doc.axesso.de/#api-Amazon))
 - [Mercado Libre API](https://developers.mercadolibre.com.co/en_us/api-docs)
